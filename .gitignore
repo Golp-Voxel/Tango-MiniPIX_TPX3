@@ -1,0 +1,4 @@
+/py37-tango
+*.bat
+setting.ini
+*.code-workspace

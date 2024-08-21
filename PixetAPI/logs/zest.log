@@ -1,0 +1,9 @@
+################# LOG OPENED (21/08/2024 17:50:56.730) ###################### 
+(21_17:50:56.730) [MSG]: Settings:
+(21_17:50:56.730) [MSG]:   AutoDetectDevices=1
+(21_17:50:56.730) [MSG]:   AskUserForDevices=1
+(21_17:50:56.730) [MSG]:   DeviceCount=0
+(21_17:50:56.730) [MSG]: Listing devices ...
+(21_17:50:58.759) [MSG]: Found devices (0)
+
+(21_17:50:58.759) [MSG]: Initializing devices...

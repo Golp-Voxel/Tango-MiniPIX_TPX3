@@ -1,0 +1,4 @@
+################# LOG OPENED (21/08/2024 17:50:56.709) ###################### 
+(21_17:50:56.709) [MSG]: Listing FTDI devices...
+(21_17:50:56.709) [ERR]: Listing FTDI devices failed (18)
+(21_17:50:56.709) [MSG]: Found 0 devices:
