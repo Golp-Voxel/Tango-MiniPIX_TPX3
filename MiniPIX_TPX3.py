@@ -28,6 +28,10 @@ from tango import AttrWriteType, PipeWriteType
 import os
 import PixetAPI.pypixet as pypixet
 import PixetAPI.pypxproc as pypxproc
+import numpy as np
+import json
+import time
+import datetime
 # PROTECTED REGION END #    //  MiniPIX_TPX3.additionnal_import
 
 __all__ = ["MiniPIX_TPX3", "main"]
@@ -49,6 +53,16 @@ class MiniPIX_TPX3(Device):
         dtype='DevEncoded',
     )
 
+    ExposureTime = attribute(
+        dtype='DevULong',
+        access=AttrWriteType.READ_WRITE,
+    )
+
+    NumberOfFrames = attribute(
+        dtype='DevULong',
+        access=AttrWriteType.READ_WRITE,
+    )
+
     Image = attribute(
         dtype=(('DevDouble',),),
         max_dim_x=1800, max_dim_y=1800,
@@ -62,8 +76,13 @@ class MiniPIX_TPX3(Device):
         """Initializes the attributes and properties of the MiniPIX_TPX3."""
         Device.init_device(self)
         self._test = ['', '']
+        self._exposure_time = 0
+        self._number_of_frames = 0
         self._image = ((0.0,),)
         # PROTECTED REGION ID(MiniPIX_TPX3.init_device) ENABLED START #
+        self.Mult_image = {}
+        self._exposure_time = 1        
+        self._number_of_frames = 1
         # PROTECTED REGION END #    //  MiniPIX_TPX3.init_device
 
     def always_executed_hook(self):
@@ -90,9 +109,36 @@ class MiniPIX_TPX3(Device):
         """Return the Test attribute."""
         return self._test
         # PROTECTED REGION END #    //  MiniPIX_TPX3.Test_read
+    def read_ExposureTime(self):
+        # PROTECTED REGION ID(MiniPIX_TPX3.ExposureTime_read) ENABLED START #
+        """Return the ExposureTime attribute."""
+        return self._exposure_time
+        # PROTECTED REGION END #    //  MiniPIX_TPX3.ExposureTime_read
+    def write_ExposureTime(self, value):
+        # PROTECTED REGION ID(MiniPIX_TPX3.ExposureTime_write) ENABLED START #
+        """Set the ExposureTime attribute."""
+        pass
+        # PROTECTED REGION END #    //  MiniPIX_TPX3.ExposureTime_write
+    def read_NumberOfFrames(self):
+        # PROTECTED REGION ID(MiniPIX_TPX3.NumberOfFrames_read) ENABLED START #
+        """Return the NumberOfFrames attribute."""
+        return self._number_of_frames
+        # PROTECTED REGION END #    //  MiniPIX_TPX3.NumberOfFrames_read
+    def write_NumberOfFrames(self, value):
+        # PROTECTED REGION ID(MiniPIX_TPX3.NumberOfFrames_write) ENABLED START #
+        """Set the NumberOfFrames attribute."""
+        pass
+        # PROTECTED REGION END #    //  MiniPIX_TPX3.NumberOfFrames_write
     def read_Image(self):
         # PROTECTED REGION ID(MiniPIX_TPX3.Image_read) ENABLED START #
         """Return the Image attribute."""
+        self.get_Spectrum(self._number_of_frames,self._exposure_time)
+        frame = self.dev.lastAcqFrameRefInc()
+        toplot = np.array(frame.data())
+        # print(frame.width())
+        # print(frame.height())
+        # print(toplot)
+        self._image = np.reshape(toplot,(frame.width(), frame.height()))
         return self._image
         # PROTECTED REGION END #    //  MiniPIX_TPX3.Image_read
     # --------
@@ -108,7 +154,7 @@ class MiniPIX_TPX3(Device):
         """
         :rtype: PyTango.DevVoid
         """
-        self._test = self.get_Sepectrum(3,1)
+        self._test = self.get_Spectrum(3,1)
         pass
         # PROTECTED REGION END #    //  MiniPIX_TPX3.Snap
 
@@ -117,9 +163,32 @@ class MiniPIX_TPX3(Device):
 # ----------
 
 # PROTECTED REGION ID(MiniPIX_TPX3.custom_code) ENABLED START #
-    def get_Sepectrum(self, NumbFrame, Time_Frame):
+    def get_Spectrum(self, NumbFrame, Time_Frame):
         rc = self.dev.doSimpleAcquisition(NumbFrame, Time_Frame, self.pixet.PX_FTYPE_TPX3_PIXELS_ASCII, "test_2")
         return rc
+    
+
+    def clbACQ_FINISHED(self,cnt):
+        print("ACQ_FINISHED", cnt)
+        frame = self.dev.lastAcqFrameRefInc()
+        data = frame.data()
+        print(" Px val min:", min(data), ", max:", max(data))
+        toplot = np.array(frame.data())
+        final = np.reshape(toplot,(frame.width(), frame.height()))
+        now = datetime.datetime.now()
+        self.Mult_image[now.strftime("%Y-%m-%d--%H_%M_%S")] = final
+        frame.destroy()
+
+    def multi_Spectum(self,numberOfFrames,timeOfExpo):
+        self.dev.registerEvent(self.pixet.PX_EVENT_ACQ_FINISHED, 0, self.clbACQ_FINISHED)
+        print("dev.doSimpleAcquisition (5 frames per 1 sec) - start")
+        rc = self.dev.doSimpleAcquisition(numberOfFrames, timeOfExpo, self.pixet.PX_FTYPE_NONE, "")
+        print("dev.doSimpleAcquisition - end:", rc)
+        string_json = json.dumps( self.Mult_image)
+        return string_json
+
+    
+
 # PROTECTED REGION END #    //  MiniPIX_TPX3.custom_code
 
 
