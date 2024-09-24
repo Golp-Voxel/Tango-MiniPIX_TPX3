@@ -83,6 +83,13 @@ class MiniPIX_TPX3(Device):
         self.Mult_image = {}
         self._exposure_time = 1        
         self._number_of_frames = 1
+
+        print("pixet core init...")
+        pypixet.start()
+        self.pixet=pypixet.pixet
+        devices = self.pixet.devices()
+        self.dev = devices[0]
+        
         # PROTECTED REGION END #    //  MiniPIX_TPX3.init_device
 
     def always_executed_hook(self):
@@ -98,6 +105,8 @@ class MiniPIX_TPX3(Device):
         destructor and by the device Init command.
         """
         # PROTECTED REGION ID(MiniPIX_TPX3.delete_device) ENABLED START #
+        self.pixet.exitPixet()
+        pypixet.exit()
         # PROTECTED REGION END #    //  MiniPIX_TPX3.delete_device
 
     # ------------------
@@ -117,7 +126,7 @@ class MiniPIX_TPX3(Device):
     def write_ExposureTime(self, value):
         # PROTECTED REGION ID(MiniPIX_TPX3.ExposureTime_write) ENABLED START #
         """Set the ExposureTime attribute."""
-        pass
+        self._exposure_time = value
         # PROTECTED REGION END #    //  MiniPIX_TPX3.ExposureTime_write
     def read_NumberOfFrames(self):
         # PROTECTED REGION ID(MiniPIX_TPX3.NumberOfFrames_read) ENABLED START #
@@ -127,7 +136,7 @@ class MiniPIX_TPX3(Device):
     def write_NumberOfFrames(self, value):
         # PROTECTED REGION ID(MiniPIX_TPX3.NumberOfFrames_write) ENABLED START #
         """Set the NumberOfFrames attribute."""
-        pass
+        self._number_of_frames = value
         # PROTECTED REGION END #    //  MiniPIX_TPX3.NumberOfFrames_write
     def read_Image(self):
         # PROTECTED REGION ID(MiniPIX_TPX3.Image_read) ENABLED START #
