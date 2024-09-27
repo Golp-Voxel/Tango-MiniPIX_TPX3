@@ -68,15 +68,21 @@ class MiniPIX_TPX3(Device):
         self._test = ['', '']
         self._image = ((0.0,),)
         # PROTECTED REGION ID(MiniPIX_TPX3.init_device) ENABLED START #
+        self.info_stream("\r Try to start the MiniPIX_TPX3 Driver \r")
         self.Mult_image = {}
         self._exposure_time = 1        
         self._number_of_frames = 1
-
+        # try:
         print("pixet core init...")
         pypixet.start()
         self.pixet=pypixet.pixet
         devices = self.pixet.devices()
         self.dev = devices[0]
+        try:
+            self.Snap()
+            self.set_state(DevState.ON)
+        except:
+            self.set_state(DevState.DISABLE)
         
         # PROTECTED REGION END #    //  MiniPIX_TPX3.init_device
 
@@ -131,7 +137,7 @@ class MiniPIX_TPX3(Device):
         """
         :rtype: PyTango.DevVoid
         """
-        self._test = self.get_Spectrum(3,1)
+        self._test = self.get_Spectrum(1,1)
         pass
         # PROTECTED REGION END #    //  MiniPIX_TPX3.Snap
 
