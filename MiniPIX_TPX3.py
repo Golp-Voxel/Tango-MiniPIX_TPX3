@@ -53,16 +53,6 @@ class MiniPIX_TPX3(Device):
         dtype='DevEncoded',
     )
 
-    ExposureTime = attribute(
-        dtype='DevULong',
-        access=AttrWriteType.READ_WRITE,
-    )
-
-    NumberOfFrames = attribute(
-        dtype='DevULong',
-        access=AttrWriteType.READ_WRITE,
-    )
-
     Image = attribute(
         dtype=(('DevDouble',),),
         max_dim_x=1800, max_dim_y=1800,
@@ -76,8 +66,6 @@ class MiniPIX_TPX3(Device):
         """Initializes the attributes and properties of the MiniPIX_TPX3."""
         Device.init_device(self)
         self._test = ['', '']
-        self._exposure_time = 0
-        self._number_of_frames = 0
         self._image = ((0.0,),)
         # PROTECTED REGION ID(MiniPIX_TPX3.init_device) ENABLED START #
         self.Mult_image = {}
@@ -118,26 +106,6 @@ class MiniPIX_TPX3(Device):
         """Return the Test attribute."""
         return self._test
         # PROTECTED REGION END #    //  MiniPIX_TPX3.Test_read
-    def read_ExposureTime(self):
-        # PROTECTED REGION ID(MiniPIX_TPX3.ExposureTime_read) ENABLED START #
-        """Return the ExposureTime attribute."""
-        return self._exposure_time
-        # PROTECTED REGION END #    //  MiniPIX_TPX3.ExposureTime_read
-    def write_ExposureTime(self, value):
-        # PROTECTED REGION ID(MiniPIX_TPX3.ExposureTime_write) ENABLED START #
-        """Set the ExposureTime attribute."""
-        self._exposure_time = value
-        # PROTECTED REGION END #    //  MiniPIX_TPX3.ExposureTime_write
-    def read_NumberOfFrames(self):
-        # PROTECTED REGION ID(MiniPIX_TPX3.NumberOfFrames_read) ENABLED START #
-        """Return the NumberOfFrames attribute."""
-        return self._number_of_frames
-        # PROTECTED REGION END #    //  MiniPIX_TPX3.NumberOfFrames_read
-    def write_NumberOfFrames(self, value):
-        # PROTECTED REGION ID(MiniPIX_TPX3.NumberOfFrames_write) ENABLED START #
-        """Set the NumberOfFrames attribute."""
-        self._number_of_frames = value
-        # PROTECTED REGION END #    //  MiniPIX_TPX3.NumberOfFrames_write
     def read_Image(self):
         # PROTECTED REGION ID(MiniPIX_TPX3.Image_read) ENABLED START #
         """Return the Image attribute."""
