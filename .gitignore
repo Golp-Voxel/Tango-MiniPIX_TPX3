@@ -2,5 +2,6 @@
 *.bat
 setting.ini
 *.code-workspace
-/ PixetAPI/logs/*.*
+/PixetAPI/logs/*.*
+/PixetAPI/logs/*
 /PixetAPI/configs/
